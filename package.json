@@ -99,11 +99,6 @@
       "indentation": 2
     }
   },
-  "dllPlugin": {
-    "path": "node_modules/react-boilerplate-dlls",
-    "exclude": ["express","chalk","compression"],
-    "include": ["core-js", "eventsource-polyfill", "lodash"]
-  },
   "dependencies": {
     "babel-polyfill": "^6.7.4",
     "chalk": "^1.1.3",
