@@ -1,4 +1,7 @@
 const resolve = require('path').resolve;
+const pullAll = require('lodash/pullAll');
+const uniq = require('lodash/uniq');
+const { keys } = Object;
 
 const ReactBoilerplate = {
   // This refers to the react-boilerplate version this project is based on.
@@ -13,20 +16,33 @@ const ReactBoilerplate = {
    * To disable the DLL Plugin, set this value to false.
    */
   dllPlugin: {
-    /**
-     * we need to exclude dependencies which are not intended for the browser
-     * by listing them here.
-     */
-    exclude: ['express', 'chalk', 'compression', 'ip', 'cross-env'],
+    defaults: {
+      /**
+       * we need to exclude dependencies which are not intended for the browser
+       * by listing them here.
+       */
+      exclude: ['express', 'chalk', 'compression', 'ip', 'cross-env'],
 
-    /**
-     * Specify any additional dependencies here. We include core-js and lodash
-     * since a lot of our dependencies depend on them and they get picked up by webpack.
-     */
-    include: ['core-js', 'eventsource-polyfill', 'babel-polyfill', 'lodash'],
+      /**
+       * Specify any additional dependencies here. We include core-js and lodash
+       * since a lot of our dependencies depend on them and they get picked up by webpack.
+       */
+      include: ['core-js', 'eventsource-polyfill', 'babel-polyfill', 'lodash'],
 
-    // The path where the DLL manifest and bundle will get built
-    path: resolve('../node_modules/react-boilerplate-dlls'),
+      // The path where the DLL manifest and bundle will get built
+      path: resolve('../node_modules/react-boilerplate-dlls'),
+    },
+
+    entry(pkg) {
+      const dependencyNames = keys(pkg.dependencies);
+      const exclude = pkg.dllPlugin.exclude || ReactBoilerplate.dllPlugin.defaults.exclude;
+      const include = pkg.dllPlugin.include || ReactBoilerplate.dllPlugin.defaults.include;
+      const includeDependencies = uniq(dependencyNames.concat(include));
+
+      return {
+        reactBoilerplateDeps: pullAll(includeDependencies, exclude),
+      };
+    },
   },
 };
 
